@@ -25,7 +25,7 @@ public class OrdersService {
 
   public HttpStatus requestOrder(OrdersRequest ordersRequest, Integer userId) {
     Item item = itemRepository.findById(ordersRequest.getItemId()).orElse(null);
-    OrdersDto orders = ordersDtoQuery.findByCartId(ordersRequest.getCartId(), userId);
+    OrdersDto orders = ordersDtoQuery.findByCartId(ordersRequest.getCartId(), userId, ordersRequest.getQuantity());
 
     if (orders.getSoldOut() || ordersRequest.getQuantity() < 1) {
 
@@ -38,6 +38,7 @@ public class OrdersService {
           .itemId(ordersRequest.getItemId()).optionId(ordersRequest.getOptionId()).userId(userId)
           .quantity(ordersRequest.getQuantity()).remark(ordersRequest.getRemark())
           .build());
+
       itemOptionRepository.save(
           ItemOption.builder().id(ordersRequest.getOptionId()).itemId(ordersRequest.getItemId())
               .quantity(itemOption.getQuantity() - ordersRequest.getQuantity())
@@ -50,6 +51,7 @@ public class OrdersService {
           .itemId(ordersRequest.getItemId()).optionId(ordersRequest.getOptionId())
           .quantity(ordersRequest.getQuantity()).remark(ordersRequest.getRemark()).userId(userId)
           .build());
+
       item = Item.builder().id(item.getId()).name(item.getName()).price(item.getPrice())
           .quantity(item.getQuantity() - ordersRequest.getQuantity())
           .build();

@@ -28,7 +28,7 @@ public class CartDtoQuery {
     QItemOption itemOption = QItemOption.itemOption;
     QCart cart = QCart.cart;
 
-    QueryResults<CartDto> results = queryFactory.select(new QCartDto(
+    List<CartDto> results = queryFactory.select(new QCartDto(
             cart.userId,
             cart.itemId,
             cart.quantity,
@@ -46,10 +46,10 @@ public class CartDtoQuery {
         .where(cart.userId.eq(userId))
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
-        .fetchResults();
-
-    List<CartDto> content = results.getResults();
-    long total = results.getTotal();
-    return new PageImpl<>(content, pageable, total);
+        .fetch();
+//    queryResults
+//    List<CartDto> content = results.getResults();
+//    long total = results.getTotal();
+    return new PageImpl<>(results, pageable, results.size());
   }
 }

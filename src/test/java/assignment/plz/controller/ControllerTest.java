@@ -80,20 +80,20 @@ public class ControllerTest {
     Item existItem = Item.builder()
         .name("shirts").optionYn(true)
         .build();
-    Item soldoutItem = Item.builder()
+    Item soldOutItem = Item.builder()
         .name("pants").optionYn(true)
         .build();
     itemRepository.save(existItem);
-    itemRepository.save(soldoutItem);
+    itemRepository.save(soldOutItem);
 
     existItem = itemRepository.findByName("shirts").orElse(null);
-    soldoutItem = itemRepository.findByName("pants").orElse(null);
+    soldOutItem = itemRepository.findByName("pants").orElse(null);
 
     ItemOption option1 = ItemOption.builder()
         .itemId(existItem.getId()).name("medium").description("Size 1").price(20000).quantity(5)
         .build();
     ItemOption option2 = ItemOption.builder()
-        .itemId(soldoutItem.getId()).name("large").description("Size 2").price(25000).quantity(0)
+        .itemId(soldOutItem.getId()).name("large").description("Size 2").price(25000).quantity(0)
         .build();
     itemOptionRepository.save(option1);
     itemOptionRepository.save(option2);
@@ -101,8 +101,8 @@ public class ControllerTest {
     Cart cart = Cart.builder()
         .itemId(existItem.getId()).quantity(4).userId(user1.getId()).optionId(option1.getId())
         .build();
-    Cart soldoutCart = Cart.builder()
-        .itemId(soldoutItem.getId()).quantity(3).userId(user1.getId()).optionId(option2.getId())
+    Cart soldOutCart = Cart.builder()
+        .itemId(soldOutItem.getId()).quantity(3).userId(user1.getId()).optionId(option2.getId())
         .build();
     Cart noOptionCart = Cart.builder()
         .itemId(noOptionItem.getId()).quantity(3).userId(user1.getId())
@@ -111,7 +111,7 @@ public class ControllerTest {
         .itemId(noOptionItem.getId()).quantity(3).userId(user2.getId())
         .build();
     cartRepository.save(cart);
-    cartRepository.save(soldoutCart);
+    cartRepository.save(soldOutCart);
     cartRepository.save(noOptionCart);
     cartRepository.save(anotherUsersCart);
   }
@@ -182,6 +182,26 @@ public class ControllerTest {
 
     ResponseEntity<Long> differentOptionFail = restTemplate.postForEntity(url,
         differentItemOption,
+        Long.class);
+    assertThat(differentOptionFail.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+  }
+
+  @Test
+  @DisplayName("장바구니 추가 실패 초과 수량")
+  public void 초과_수량() {
+    String url = "http://localhost:" + port + "/api/v1/carts";
+    User user = userRepository.findByUsername("Kim").orElse(null);
+    Item item = itemRepository.findByName("shirts").orElse(null);
+
+    ItemOption itemOption = itemOptionRepository.findByItemId(item.getId()).orElse(null);
+
+    AddItemRequest moreThanExsists = AddItemRequest.builder()
+        .optionYn(item.isOptionYn()).userId(user.getId()).itemOptionId(itemOption.getId())
+        .quantity(999)
+        .itemId(item.getId()).build();
+
+    ResponseEntity<Long> differentOptionFail = restTemplate.postForEntity(url,
+        moreThanExsists,
         Long.class);
     assertThat(differentOptionFail.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
   }
@@ -275,8 +295,8 @@ public class ControllerTest {
   }
 
   @Test
-  @DisplayName("주문 실패 품절상품 주문")
-  public void 장바구니_주문_품절상품() {
+  @DisplayName("주문 실패 초과 주문")
+  public void 장바구니_주문_초과주문() {
     User user = userRepository.findByUsername("Kim").orElse(null);
     List<Cart> cart = cartRepository.findAllByUserId(user.getId());
 
@@ -289,6 +309,7 @@ public class ControllerTest {
     ResponseEntity<Long> orderSuccess = restTemplate.postForEntity(url, ordersRequest, Long.class);
     assertThat(orderSuccess.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
   }
+
   @Test
   @DisplayName("카트 삭제 성공")
   public void 삭제_성공() {
@@ -300,20 +321,6 @@ public class ControllerTest {
         Void.class);
 
     Assertions.assertEquals(deleteSuccess.getStatusCode(), HttpStatus.OK);
-  }
-
-  @Test
-  @DisplayName("카트 삭제 실패 다른 회원의 장바구니")
-  public void 삭제_실패() {
-    User user = userRepository.findByUsername("Kim").orElse(null);
-    User otherUser = userRepository.findByUsername("Lee").orElse(null);
-    List<Cart> cart = cartRepository.findAllByUserId(otherUser.getId());
-
-    String url = "http://localhost:" + port + "/api/v1/carts/" + cart.get(0).getId();
-    ResponseEntity<Void> deleteSuccess = restTemplate.exchange(url, HttpMethod.DELETE, null,
-        Void.class);
-
-    Assertions.assertEquals(deleteSuccess.getStatusCode(), HttpStatus.BAD_REQUEST);
   }
 
   @AfterEach

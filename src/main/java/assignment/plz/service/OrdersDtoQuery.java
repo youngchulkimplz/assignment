@@ -17,16 +17,16 @@ import org.springframework.stereotype.Service;
 public class OrdersDtoQuery {
   private final JPAQueryFactory queryFactory;
 
-  public OrdersDto findByCartId(Integer cartId, Integer userId){
+  public OrdersDto findByCartId(Integer cartId, Integer userId, int orderQuantity){
     QItem item = QItem.item;
     QItemOption itemOption = QItemOption.itemOption;
     QCart cart = QCart.cart;
 
     return queryFactory.select(new QOrdersDto(
             new CaseBuilder()
-                .when(item.optionYn.eq(true).and(itemOption.quantity.goe(cart.quantity)))
+                .when(item.optionYn.eq(true).and(itemOption.quantity.goe(orderQuantity)))
                 .then(false)
-                .when(item.optionYn.eq(false).and(item.quantity.goe(cart.quantity)))
+                .when(item.optionYn.eq(false).and(item.quantity.goe(orderQuantity)))
                 .then(false)
                 .otherwise(true)
                 .as("soldOut"),
