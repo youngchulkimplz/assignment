@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: root
+    url: jdbc:mariadb://localhost:3306/assignment
+    password: root
+  jpa:
+    generate-ddl: false
+    properties:
+      hibernate:
+        show-sql: true
+        format_sql: true
+#logging
+#  level:
+#    org:
+#      hibernate:
+#        SQL: debug
+#        type:
+#          descriptor:
+#            sql: trace
