@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class AddItemRequest {
+
   @NotNull
   private Integer itemId;
 

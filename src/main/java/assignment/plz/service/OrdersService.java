@@ -25,7 +25,8 @@ public class OrdersService {
 
   public HttpStatus requestOrder(OrdersRequest ordersRequest, Integer userId) {
     Item item = itemRepository.findById(ordersRequest.getItemId()).orElse(null);
-    OrdersDto orders = ordersDtoQuery.findByCartId(ordersRequest.getCartId(), userId, ordersRequest.getQuantity());
+    OrdersDto orders = ordersDtoQuery.findByCartId(ordersRequest.getCartId(), userId,
+        ordersRequest.getQuantity());
 
     if (orders.getSoldOut() || ordersRequest.getQuantity() < 1) {
 

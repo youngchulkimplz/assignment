@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/orders")
 public class OrdersController {
+
   private final OrdersService ordersService;
 
   /*
@@ -22,7 +23,8 @@ public class OrdersController {
   주문 성공 시 기존 아이템 갯수 - 주문 갯수
    */
   @PostMapping("/{id}")
-  public ResponseEntity requestOrder(@RequestBody OrdersRequest ordersRequest, @PathVariable Integer id){
+  public ResponseEntity requestOrder(@RequestBody OrdersRequest ordersRequest,
+      @PathVariable Integer id) {
     return new ResponseEntity(ordersService.requestOrder(ordersRequest, id));
   }
 }

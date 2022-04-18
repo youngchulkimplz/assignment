@@ -15,9 +15,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class OrdersDtoQuery {
+
   private final JPAQueryFactory queryFactory;
 
-  public OrdersDto findByCartId(Integer cartId, Integer userId, int orderQuantity){
+  public OrdersDto findByCartId(Integer cartId, Integer userId, int orderQuantity) {
     QItem item = QItem.item;
     QItemOption itemOption = QItemOption.itemOption;
     QCart cart = QCart.cart;
@@ -34,7 +35,7 @@ public class OrdersDtoQuery {
             cart.itemId)
         )
         .from(cart)
-        .leftJoin(item).on(item.id.eq(cart.itemId))
+        .join(item).on(item.id.eq(cart.itemId))
         .leftJoin(itemOption).on(itemOption.itemId.eq(item.id))
         .where(cart.id.eq(cartId), cart.userId.eq(userId))
         .fetchOne();

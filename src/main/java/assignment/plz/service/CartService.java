@@ -7,7 +7,6 @@ import assignment.plz.model.Item;
 import assignment.plz.model.ItemOption;
 import assignment.plz.repository.CartRepository;
 import assignment.plz.repository.ItemOptionRepository;
-import assignment.plz.repository.ItemQueryRepository;
 import java.util.Objects;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +22,11 @@ public class CartService {
 
   private final ItemOptionRepository itemOptionRepository;
   private final CartRepository cartRepository;
-  private final ItemQueryRepository itemQueryRepository;
+  private final ItemQuery itemQuery;
   private final CartDtoQuery cartDtoQuery;
 
   public HttpStatus addItemToCart(AddItemRequest addItemRequest) {
-    Item findItem = itemQueryRepository.findByNameAndCheckStock(addItemRequest.getItemId(),
+    Item findItem = itemQuery.findByNameAndCheckStock(addItemRequest.getItemId(),
         addItemRequest.getQuantity());
     if (findItem == null || addItemRequest.getQuantity() < 1) {
       return HttpStatus.BAD_REQUEST;

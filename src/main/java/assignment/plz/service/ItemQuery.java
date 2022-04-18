@@ -1,4 +1,4 @@
-package assignment.plz.repository;
+package assignment.plz.service;
 
 import assignment.plz.model.Item;
 import assignment.plz.model.QItem;
@@ -9,10 +9,11 @@ import org.springframework.stereotype.Repository;
 
 @RequiredArgsConstructor
 @Repository
-public class ItemQueryRepository {
+public class ItemQuery {
+
   private final JPAQueryFactory queryFactory;
 
-  public Item findByNameAndCheckStock(Integer itemId, int quantity){
+  public Item findByNameAndCheckStock(Integer itemId, int quantity) {
     QItem qItem = QItem.item;
     QItemOption qItemOption = QItemOption.itemOption;
 

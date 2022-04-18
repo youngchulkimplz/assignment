@@ -41,15 +41,13 @@ public class CartDtoQuery {
                 .as("soldOut"),
             cart.optionId))
         .from(cart)
-        .leftJoin(item).on(item.id.eq(cart.itemId))
+        .join(item).on(item.id.eq(cart.itemId))
         .leftJoin(itemOption).on(itemOption.itemId.eq(item.id))
         .where(cart.userId.eq(userId))
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
         .fetch();
-//    queryResults
-//    List<CartDto> content = results.getResults();
-//    long total = results.getTotal();
+
     return new PageImpl<>(results, pageable, results.size());
   }
 }

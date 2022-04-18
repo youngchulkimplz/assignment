@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 public class RestResponsePage<T> extends PageImpl<T> {
+
   @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
   public RestResponsePage(@JsonProperty("content") List<T> content,
       @JsonProperty("number") int number,

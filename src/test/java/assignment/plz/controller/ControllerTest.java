@@ -64,24 +64,31 @@ public class ControllerTest {
     userRepository.deleteAll();
 
     User user1 = User.builder()
-        .username("Kim").password("1234")
+        .username("Kim")
+        .password("1234")
         .build();
     userRepository.save(user1);
     User user2 = User.builder()
-        .username("Lee").password("1234")
+        .username("Lee")
+        .password("1234")
         .build();
     userRepository.save(user2);
 
     Item noOptionItem = Item.builder()
-        .name("watermelon").price(10000).quantity(10).optionYn(false)
+        .name("watermelon")
+        .price(10000)
+        .quantity(10)
+        .optionYn(false)
         .build();
     itemRepository.save(noOptionItem);
 
     Item existItem = Item.builder()
-        .name("shirts").optionYn(true)
+        .name("shirts")
+        .optionYn(true)
         .build();
     Item soldOutItem = Item.builder()
-        .name("pants").optionYn(true)
+        .name("pants")
+        .optionYn(true)
         .build();
     itemRepository.save(existItem);
     itemRepository.save(soldOutItem);
@@ -90,25 +97,41 @@ public class ControllerTest {
     soldOutItem = itemRepository.findByName("pants").orElse(null);
 
     ItemOption option1 = ItemOption.builder()
-        .itemId(existItem.getId()).name("medium").description("Size 1").price(20000).quantity(5)
+        .itemId(existItem.getId())
+        .name("medium")
+        .description("Size 1")
+        .price(20000)
+        .quantity(5)
         .build();
     ItemOption option2 = ItemOption.builder()
-        .itemId(soldOutItem.getId()).name("large").description("Size 2").price(25000).quantity(0)
+        .itemId(soldOutItem.getId())
+        .name("large")
+        .description("Size 2")
+        .price(25000)
+        .quantity(0)
         .build();
     itemOptionRepository.save(option1);
     itemOptionRepository.save(option2);
 
     Cart cart = Cart.builder()
-        .itemId(existItem.getId()).quantity(4).userId(user1.getId()).optionId(option1.getId())
+        .itemId(existItem.getId())
+        .quantity(4)
+        .userId(user1.getId())
+        .optionId(option1.getId())
         .build();
     Cart soldOutCart = Cart.builder()
-        .itemId(soldOutItem.getId()).quantity(3).userId(user1.getId()).optionId(option2.getId())
+        .itemId(soldOutItem.getId())
+        .quantity(3).userId(user1.getId())
+        .optionId(option2.getId())
         .build();
     Cart noOptionCart = Cart.builder()
-        .itemId(noOptionItem.getId()).quantity(3).userId(user1.getId())
+        .itemId(noOptionItem.getId())
+        .quantity(3).userId(user1.getId())
         .build();
     Cart anotherUsersCart = Cart.builder()
-        .itemId(noOptionItem.getId()).quantity(3).userId(user2.getId())
+        .itemId(noOptionItem.getId())
+        .quantity(3)
+        .userId(user2.getId())
         .build();
     cartRepository.save(cart);
     cartRepository.save(soldOutCart);
@@ -126,7 +149,10 @@ public class ControllerTest {
     ItemOption option = itemOptionRepository.findByItemId(item.getId()).orElse(null);
 
     AddItemRequest addItem = AddItemRequest.builder()
-        .optionYn(item.isOptionYn()).userId(user.getId()).itemOptionId(option.getId()).quantity(3)
+        .optionYn(item.isOptionYn())
+        .userId(user.getId())
+        .itemOptionId(option.getId())
+        .quantity(3)
         .itemId(item.getId()).build();
 
     ResponseEntity<Long> addSuccess = restTemplate.postForEntity(url, addItem, Long.class);
@@ -141,7 +167,10 @@ public class ControllerTest {
     Item item = itemRepository.findByName("watermelon").orElse(null);
 
     AddItemRequest addItem = AddItemRequest.builder()
-        .optionYn(item.isOptionYn()).userId(user.getId()).quantity(3).itemId(item.getId())
+        .optionYn(item.isOptionYn())
+        .userId(user.getId())
+        .quantity(3)
+        .itemId(item.getId())
         .build();
 
     ResponseEntity<Long> addSuccess = restTemplate.postForEntity(url, addItem, Long.class);
@@ -158,7 +187,10 @@ public class ControllerTest {
     ItemOption option = itemOptionRepository.findByItemId(item.getId()).orElse(null);
 
     AddItemRequest addEmptyItem = AddItemRequest.builder()
-        .optionYn(item.isOptionYn()).userId(user.getId()).itemOptionId(option.getId()).quantity(8)
+        .optionYn(item.isOptionYn())
+        .userId(user.getId())
+        .itemOptionId(option.getId())
+        .quantity(8)
         .itemId(item.getId()).build();
 
     ResponseEntity<Long> emptyFail = restTemplate.postForEntity(url, addEmptyItem, Long.class);
@@ -176,9 +208,12 @@ public class ControllerTest {
     ItemOption otherOption = itemOptionRepository.findByItemId(otherItem.getId()).orElse(null);
 
     AddItemRequest differentItemOption = AddItemRequest.builder()
-        .optionYn(item.isOptionYn()).userId(user.getId()).itemOptionId(otherOption.getId())
+        .optionYn(item.isOptionYn())
+        .userId(user.getId())
+        .itemOptionId(otherOption.getId())
         .quantity(3)
-        .itemId(item.getId()).build();
+        .itemId(item.getId())
+        .build();
 
     ResponseEntity<Long> differentOptionFail = restTemplate.postForEntity(url,
         differentItemOption,
@@ -196,9 +231,12 @@ public class ControllerTest {
     ItemOption itemOption = itemOptionRepository.findByItemId(item.getId()).orElse(null);
 
     AddItemRequest moreThanExsists = AddItemRequest.builder()
-        .optionYn(item.isOptionYn()).userId(user.getId()).itemOptionId(itemOption.getId())
+        .optionYn(item.isOptionYn())
+        .userId(user.getId())
+        .itemOptionId(itemOption.getId())
         .quantity(999)
-        .itemId(item.getId()).build();
+        .itemId(item.getId())
+        .build();
 
     ResponseEntity<Long> differentOptionFail = restTemplate.postForEntity(url,
         moreThanExsists,
@@ -253,8 +291,10 @@ public class ControllerTest {
     List<Cart> cart = cartRepository.findAllByUserId(user.getId());
 
     OrdersRequest ordersRequest = OrdersRequest.builder().itemId(cart.get(0).getItemId())
-        .optionId(cart.get(0).getOptionId()).quantity(cart.get(0).getQuantity())
-        .cartId(cart.get(0).getId()).remark("빨리 배송 해 주세요")
+        .optionId(cart.get(0).getOptionId())
+        .quantity(cart.get(0).getQuantity())
+        .cartId(cart.get(0).getId())
+        .remark("빨리 배송 해 주세요")
         .build();
 
     String url = "http://localhost:" + port + "/api/v1/orders/" + user.getId();
@@ -267,15 +307,20 @@ public class ControllerTest {
   public void 장바구니_주문_성공_옵션없음() {
     User user = userRepository.findByUsername("Kim").orElse(null);
     List<Cart> cart = cartRepository.findAllByUserId(user.getId());
+    Item preOrderItem = itemRepository.findByName("watermelon").orElse(null);
 
-    OrdersRequest ordersRequest = OrdersRequest.builder().itemId(cart.get(2).getItemId())
-        .optionId(cart.get(2).getOptionId()).quantity(cart.get(2).getQuantity())
-        .cartId(cart.get(2).getId()).remark("빨리 배송 해 주세요22")
+    OrdersRequest ordersRequest = OrdersRequest.builder()
+        .itemId(cart.get(2).getItemId())
+        .optionId(cart.get(2).getOptionId())
+        .quantity(cart.get(2).getQuantity())
+        .cartId(cart.get(2).getId())
+        .remark("빨리 배송 해 주세요22")
         .build();
 
     String url = "http://localhost:" + port + "/api/v1/orders/" + user.getId();
     ResponseEntity<Long> orderSuccess = restTemplate.postForEntity(url, ordersRequest, Long.class);
     assertThat(orderSuccess.getStatusCode()).isEqualTo(HttpStatus.OK);
+    Assertions.assertEquals(7, preOrderItem.getQuantity() - cart.get(2).getQuantity());
   }
 
   @Test
@@ -284,9 +329,12 @@ public class ControllerTest {
     User user = userRepository.findByUsername("Kim").orElse(null);
     List<Cart> cart = cartRepository.findAllByUserId(user.getId());
 
-    OrdersRequest ordersRequest = OrdersRequest.builder().itemId(cart.get(2).getItemId())
-        .optionId(cart.get(2).getOptionId()).quantity(0)
-        .cartId(cart.get(2).getId()).remark("빨리 배송 해 주세요www")
+    OrdersRequest ordersRequest = OrdersRequest.builder()
+        .itemId(cart.get(2).getItemId())
+        .optionId(cart.get(2).getOptionId())
+        .quantity(0)
+        .cartId(cart.get(2).getId())
+        .remark("빨리 배송 해 주세요www")
         .build();
 
     String url = "http://localhost:" + port + "/api/v1/orders/" + user.getId();
@@ -301,8 +349,10 @@ public class ControllerTest {
     List<Cart> cart = cartRepository.findAllByUserId(user.getId());
 
     OrdersRequest ordersRequest = OrdersRequest.builder().itemId(cart.get(2).getItemId())
-        .optionId(cart.get(2).getOptionId()).quantity(999)
-        .cartId(cart.get(2).getId()).remark("빨리 배송 해 주세요www")
+        .optionId(cart.get(2).getOptionId())
+        .quantity(999)
+        .cartId(cart.get(2).getId())
+        .remark("빨리 배송 해 주세요www")
         .build();
 
     String url = "http://localhost:" + port + "/api/v1/orders/" + user.getId();
